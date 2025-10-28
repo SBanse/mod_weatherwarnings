@@ -1,0 +1,43 @@
+:root{
+    --text-color-default:#878786;
+    --background-light:#efefef;
+    --background-head:red;
+    --background-head-color:#fff;
+
+    --background-accent:#d3d3d3;
+
+    --border-color-default:var(--text-color-default);
+}
+#weatherwarnings.hide{display: none;}
+#weatherwarnings{background-color:var(--background-light);left:0;overflow-x: hidden;padding:60px 0}
+#weatherwarnings .header{text-align:center;width:100%;margin-bottom:30px;}
+#weatherwarning .flex-item .header{border-bottom:solid 1px var(--border-color-default);}
+#weatherwarnings .row{gap:1rem;}
+#weatherwarnings .flex-item{min-width: 40%;border:solid 1px var(--border-color-default);background-color:var(--background-light);color:var(--text-color-default);border-radius:.25rem;position: relative;padding-bottom:30px;overflow:hidden;box-shadow: 0 3px 2px var(--text-color-default);display: flex;flex-direction: column;justify-content: space-between;}
+#weatherwarnings .flex-item .row{padding:6px;margin-right: 15px;margin-left: 15px;}
+.warn-header{background-color: var(--background-head);color: var(--background-head-color);}
+.warn-header h4{padding:0; margin:0}
+#close-warnings{flex: 1 0 0%;margin:30px 15px 0 15px;line-height:40px;border: solid 1px var(--border-color-default);}
+#close-warnings:hover{background-color: var(--background-accent) !important;}
+.warn-icons{max-width: 60px;}
+.warn-content, .warn-icons{flex:1 0 0%}
+.warn-times{margin:.2em 0 0 0;max-width: 470px;}
+.warn-times div{background-color: #fdfdfd;padding:3px 6px;border: solid 1px var(--border-color-default);border-radius: .25rem;font-size: 90%;white-space: nowrap;}
+.warn-icons img{width:100%; height: auto;}
+#weatherwarnings .flex-item .warn-footer{background-color: var(--background-accent);position: absolute;bottom:0;width: 100%;border-top:solid 1px var(--border-color-default);}
+#weatherwarnings .flex-item .warn-footer .row, .warn-times {display: flex;flex-direction: row;justify-content: space-between;}
+#weatherwarnings .flex-item .warn-footer, .warn-instruction{font-size:.8rem}
+.region{border:solid 1px var(--border-color-default); padding:3px 12px; background-color: var(--background-head); color:var(--background-head-color);border-radius: .25rem;flex:1 0 0%;white-space: nowrap;text-align: center;}
+.label{padding:6px 0}
+#weatherwarnings .regions .row{display:flex;justify-content:space-between;align-items: stretch;align-content: stretch; margin-left:0; margin-right:0;padding:0;}
+.regionsBlock{
+    background-color: #ffffff;
+    border-top:solid 1px var(--border-color-default);
+}
+@media all and (max-width:768px){
+    #weatherwarnings .container > .row{flex-direction: column;}
+}
+
+@media all and (max-width:1024px){
+    #weatherwarnings .flex-item{flex:1 0 100%}
+}
