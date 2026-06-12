@@ -1,43 +1,401 @@
-:root{
-    --text-color-default:#878786;
-    --background-light:#efefef;
-    --background-head:red;
-    --background-head-color:#fff;
+/* ==========================================================================
+   mod_weatherwarnings – Atmospheric Alert Board
+   Dark panel · Amber severity accents · Staggered card entrance
+   ========================================================================== */
 
-    --background-accent:#d3d3d3;
-
-    --border-color-default:var(--text-color-default);
-}
-#weatherwarnings.hide{display: none;}
-#weatherwarnings{background-color:var(--background-light);left:0;overflow-x: hidden;padding:60px 0}
-#weatherwarnings .header{text-align:center;width:100%;margin-bottom:30px;}
-#weatherwarning .flex-item .header{border-bottom:solid 1px var(--border-color-default);}
-#weatherwarnings .row{gap:1rem;}
-#weatherwarnings .flex-item{min-width: 40%;border:solid 1px var(--border-color-default);background-color:var(--background-light);color:var(--text-color-default);border-radius:.25rem;position: relative;padding-bottom:30px;overflow:hidden;box-shadow: 0 3px 2px var(--text-color-default);display: flex;flex-direction: column;justify-content: space-between;}
-#weatherwarnings .flex-item .row{padding:6px;margin-right: 15px;margin-left: 15px;}
-.warn-header{background-color: var(--background-head);color: var(--background-head-color);}
-.warn-header h4{padding:0; margin:0}
-#close-warnings{flex: 1 0 0%;margin:30px 15px 0 15px;line-height:40px;border: solid 1px var(--border-color-default);}
-#close-warnings:hover{background-color: var(--background-accent) !important;}
-.warn-icons{max-width: 60px;}
-.warn-content, .warn-icons{flex:1 0 0%}
-.warn-times{margin:.2em 0 0 0;max-width: 470px;}
-.warn-times div{background-color: #fdfdfd;padding:3px 6px;border: solid 1px var(--border-color-default);border-radius: .25rem;font-size: 90%;white-space: nowrap;}
-.warn-icons img{width:100%; height: auto;}
-#weatherwarnings .flex-item .warn-footer{background-color: var(--background-accent);position: absolute;bottom:0;width: 100%;border-top:solid 1px var(--border-color-default);}
-#weatherwarnings .flex-item .warn-footer .row, .warn-times {display: flex;flex-direction: row;justify-content: space-between;}
-#weatherwarnings .flex-item .warn-footer, .warn-instruction{font-size:.8rem}
-.region{border:solid 1px var(--border-color-default); padding:3px 12px; background-color: var(--background-head); color:var(--background-head-color);border-radius: .25rem;flex:1 0 0%;white-space: nowrap;text-align: center;}
-.label{padding:6px 0}
-#weatherwarnings .regions .row{display:flex;justify-content:space-between;align-items: stretch;align-content: stretch; margin-left:0; margin-right:0;padding:0;}
-.regionsBlock{
-    background-color: #ffffff;
-    border-top:solid 1px var(--border-color-default);
-}
-@media all and (max-width:768px){
-    #weatherwarnings .container > .row{flex-direction: column;}
+:root {
+    --w-bg:              #1b1f30;
+    --w-bg-gradient-a:   rgba(232, 160, 32, .07);
+    --w-bg-gradient-b:   rgba(15, 18, 30, .85);
+    --w-card:            #242840;
+    --w-card-hover:      #2a2f4a;
+    --w-amber:           #e8a020;
+    --w-amber-dim:       #b87a10;
+    --w-amber-glow:      rgba(232, 160, 32, .18);
+    --w-amber-border:    rgba(232, 160, 32, .35);
+    --w-text:            #cdd5e0;
+    --w-text-muted:      #6e7a90;
+    --w-border:          rgba(255, 255, 255, .06);
+    --w-shadow:          0 6px 28px rgba(0, 0, 0, .5);
+    --w-radius:          .4rem;
+    --w-font:            'aller', 'Trebuchet MS', 'Franklin Gothic Medium', sans-serif;
+    --w-ease:            cubic-bezier(.4, 0, .2, 1);
 }
 
-@media all and (max-width:1024px){
-    #weatherwarnings .flex-item{flex:1 0 100%}
+/* ── Outer container – full viewport width breakout ──────────────────────── */
+
+#weatherwarnings {
+    background-color: var(--w-bg);
+    background-image:
+        radial-gradient(ellipse 70% 60% at 15% 50%, var(--w-bg-gradient-a) 0%, transparent 100%),
+        radial-gradient(ellipse 50% 80% at 90% 10%, var(--w-bg-gradient-b) 0%, transparent 100%);
+    padding: 48px 0 40px;
+    font-family: var(--w-font);
+    color: var(--w-text);
+    position: relative;
+    overflow: hidden;
+
+    /* Break out of any parent content column → full viewport width */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    box-sizing: border-box;
+}
+
+#weatherwarnings.hide { display: none; }
+
+/* amber top stripe */
+#weatherwarnings::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, var(--w-amber) 35%, var(--w-amber) 65%, transparent 100%);
+}
+
+/* ── Bootstrap row resets (scoped) ───────────────────────────────────────── */
+
+#weatherwarnings .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* ── Section title ────────────────────────────────────────────────────────── */
+
+#weatherwarnings .header {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 36px;
+}
+
+#weatherwarnings .header h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--w-amber);
+    margin: 0;
+}
+
+#weatherwarnings .header h3::before {
+    content: '⚠';
+    font-size: 1.15em;
+    animation: warn-pulse 2.6s ease-in-out infinite;
+}
+
+/* ── Card grid row ────────────────────────────────────────────────────────── */
+
+#weatherwarnings .warn-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0;
+}
+
+/* ── Warning card ─────────────────────────────────────────────────────────── */
+
+#weatherwarnings .flex-item {
+    flex: 1 1 400px;
+    min-width: 300px;
+    background: var(--w-card);
+    border: 1px solid var(--w-border);
+    border-left: 4px solid var(--w-amber);
+    border-radius: var(--w-radius);
+    box-shadow: var(--w-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+
+    /* entrance animation */
+    opacity: 0;
+    transform: translateY(18px);
+    animation: card-enter .5s var(--w-ease) forwards;
+    transition: box-shadow .25s var(--w-ease), transform .25s var(--w-ease);
+}
+
+#weatherwarnings .flex-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .6), 0 0 0 1px var(--w-amber-border);
+}
+
+/* staggered entrance delay */
+#weatherwarnings .flex-item:nth-child(1)  { animation-delay: .04s; }
+#weatherwarnings .flex-item:nth-child(2)  { animation-delay: .14s; }
+#weatherwarnings .flex-item:nth-child(3)  { animation-delay: .24s; }
+#weatherwarnings .flex-item:nth-child(4)  { animation-delay: .34s; }
+#weatherwarnings .flex-item:nth-child(5)  { animation-delay: .44s; }
+#weatherwarnings .flex-item:nth-child(6)  { animation-delay: .54s; }
+#weatherwarnings .flex-item:nth-child(7)  { animation-delay: .64s; }
+#weatherwarnings .flex-item:nth-child(8)  { animation-delay: .74s; }
+#weatherwarnings .flex-item:nth-child(9)  { animation-delay: .84s; }
+#weatherwarnings .flex-item:nth-child(10) { animation-delay: .94s; }
+
+/* ── Card: warn-header ────────────────────────────────────────────────────── */
+
+#weatherwarnings .flex-item .warn-header {
+    padding: 13px 16px 11px;
+    background: rgba(0, 0, 0, .2);
+    border-bottom: 1px solid var(--w-border);
+}
+
+#weatherwarnings .flex-item .warn-header .row {
+    padding: 0;
+    gap: 0;
+}
+
+#weatherwarnings .flex-item .warn-header h4 {
+    margin: 0;
+    padding: 0;
+    font-size: .92rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--w-amber);
+    letter-spacing: .01em;
+}
+
+/* ── Card: warn-body ──────────────────────────────────────────────────────── */
+
+#weatherwarnings .flex-item .warn-body {
+    padding: 16px;
+    flex: 1;
+}
+
+/* icon + content row */
+#weatherwarnings .flex-item .warn-body .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 0;
+}
+
+/* second row (instruction) — add separator */
+#weatherwarnings .flex-item .warn-body .row + .row {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--w-border);
+}
+
+/* icon */
+.warn-icons {
+    flex: 0 0 52px;
+    width: 52px;
+}
+
+.warn-icons img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 8px var(--w-amber-glow)) brightness(1.08);
+}
+
+/* text content */
+.warn-content,
+.warn-icons { flex: 1 0 0%; }
+
+.warn-icons { flex: 0 0 52px; }
+
+.warn-description {
+    font-size: .87rem;
+    line-height: 1.65;
+    color: var(--w-text);
+}
+
+/* time pills */
+.warn-times {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+    max-width: none;
+}
+
+.warn-times div {
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    font-size: .73rem;
+    padding: 3px 11px;
+    background: rgba(0, 0, 0, .3);
+    border: 1px solid var(--w-amber-border);
+    border-radius: 20px;
+    color: var(--w-amber);
+    white-space: nowrap;
+}
+
+/* instruction */
+.warn-instruction {
+    font-size: .83rem;
+    line-height: 1.6;
+    color: var(--w-text-muted);
+    font-style: italic;
+    width: 100%;
+}
+
+/* ── Regions block ────────────────────────────────────────────────────────── */
+
+.regionsBlock {
+    background: rgba(0, 0, 0, .2);
+    border-top: 1px solid var(--w-border);
+    padding: 10px 16px;
+}
+
+.regionsBlock > .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 0;
+}
+
+.regionsBlock > .row > .label {
+    flex: 0 0 auto;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--w-text-muted);
+    line-height: 1.8;
+}
+
+.regions { flex: 1; }
+
+.regions .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 0;
+}
+
+.region {
+    display: inline-block;
+    font-size: .71rem;
+    padding: 2px 10px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 20px;
+    color: var(--w-text-muted);
+    white-space: nowrap;
+    transition: border-color .2s var(--w-ease), color .2s var(--w-ease);
+}
+
+.region:hover {
+    border-color: var(--w-amber-border);
+    color: var(--w-amber);
+}
+
+/* ── Card: footer ─────────────────────────────────────────────────────────── */
+
+#weatherwarnings .flex-item .warn-footer {
+    background: rgba(0, 0, 0, .25);
+    border-top: 1px solid var(--w-border);
+    padding: 7px 16px;
+    position: static; /* remove old absolute positioning */
+}
+
+#weatherwarnings .flex-item .warn-footer .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+}
+
+.warn-sender {
+    font-size: .71rem;
+    color: var(--w-text-muted);
+}
+
+.warn-cell-id {
+    font-size: .66rem;
+    color: rgba(255, 255, 255, .18);
+    font-family: 'Courier New', monospace;
+    letter-spacing: .03em;
+}
+
+/* ── Close button row ─────────────────────────────────────────────────────── */
+
+#weatherwarnings .warn-close-row {
+    margin-top: 28px;
+    padding: 0;
+}
+
+#close-warnings {
+    display: block;
+    width: 100%;
+    padding: 11px 20px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: var(--w-radius);
+    color: var(--w-text-muted);
+    font-family: var(--w-font);
+    font-size: .78rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s var(--w-ease), border-color .2s var(--w-ease), color .2s var(--w-ease);
+}
+
+#close-warnings:hover,
+#close-warnings:focus {
+    background: var(--w-amber-glow);
+    border-color: var(--w-amber-border);
+    color: var(--w-amber);
+    outline: none;
+}
+
+#close-warnings:active {
+    background: rgba(232, 160, 32, .25);
+}
+
+/* ── Error state ──────────────────────────────────────────────────────────── */
+
+#weatherwarnings .error {
+    padding: 12px 16px;
+    background: rgba(200, 50, 50, .1);
+    border: 1px solid rgba(200, 50, 50, .3);
+    border-radius: var(--w-radius);
+    color: #f87171;
+    font-size: .87rem;
+}
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+
+@keyframes card-enter {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes warn-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: .35; }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+    #weatherwarnings .flex-item {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    #weatherwarnings {
+        padding: 32px 0 26px;
+    }
+
+    #weatherwarnings .warn-cards {
+        gap: 14px;
+    }
+
+    #weatherwarnings .flex-item .warn-body .row {
+        flex-direction: column;
+    }
+
+    .warn-times div {
+        white-space: normal;
+    }
+
+    .warn-times {
+        flex-direction: column;
+    }
 }
